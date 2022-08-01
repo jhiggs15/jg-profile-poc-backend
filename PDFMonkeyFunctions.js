@@ -3,6 +3,7 @@ import { createWriteStream, unlinkSync } from 'fs';
 import { promisify } from 'util';
 import * as stream from 'stream';
 const finished = promisify(stream.finished);
+import 'dotenv/config'
 
 export async function sleep(millis) {
     return new Promise(resolve => setTimeout(resolve, millis));

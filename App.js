@@ -7,6 +7,7 @@ import 'dotenv/config'
 const app = express()
 const port = 3001
 const storage = new Storage({keyFilename: 'key.json'});
+const bucketName = "profile-poc"
 
 app.get('/download/:documentID', async (req, res) => {
     const {documentID} = req.params
@@ -33,14 +34,13 @@ app.get('/download/:documentID', async (req, res) => {
         let pdfMonkeyFileName = pdfResult.data.document.filename
         let pdfMonkeyFileLocation = `./pdfDownloads/${pdfMonkeyFileName}`
         await downloadFile(pdfMonkeyDownloadURL, pdfMonkeyFileLocation)
-        const result = await cloudFileUpload(storage, "profile-poc", pdfMonkeyFileLocation, pdfMonkeyFileName)
+        await cloudFileUpload(storage, bucketName, pdfMonkeyFileLocation, pdfMonkeyFileName)
         await deleteFile(pdfMonkeyFileLocation)
-        // or can use self link
-        res.send(result[0].metadata.mediaLink)
+        res.send(`https://storage.cloud.google.com/${bucketName}/${pdfMonkeyFileName}`)
     }
     catch(error) {
         console.error(error)
-        res.status(500).json(error)
+        res.status(500).send(error)
     }
 
 })
